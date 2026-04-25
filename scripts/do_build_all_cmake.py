@@ -454,7 +454,7 @@ def buildSamurai():
 
     os.chdir(options.buildDir)
     shellCmd("/bin/rm -rf samurai")
-    shellCmd("git clone https://github.com/mmbell/samurai")
+    shellCmd("git clone -b master https://github.com/mmbell/samurai")
     
     # run cmake to create makefiles - in-source build
     
