@@ -17,7 +17,7 @@ function usage() {
     echo "  -t ? :  set os_type"
     echo "          e.g. centos, fedora, almalinux"
     echo "  -v ? :  set os_version"
-    echo "          e.g. 7 for centos 7, 29 for fedora 29"
+    echo "          e.g. 9 for almalinux 9, 45 for fedora 45"
     echo
 }
 
@@ -86,10 +86,8 @@ echo "#" >> $DockerfilePath
 
 if [ "$os_type" = fedora ]
 then
-    if [ "$os_version" = 42 ] ; then
-        echo "RUN yum -y update; yum install -y git python" >> $DockerfilePath
-    elif [ "$os_version" = 41 ] ; then
-        echo "RUN yum -y update; yum install -y git python" >> $DockerfilePath
+    if [ "$os_version" -ge 41 ] ; then
+        echo "RUN dnf -y update; dnf install -y git python" >> $DockerfilePath
     else
         echo "RUN dnf -y update; dnf install -y git python python2 python3" >> $DockerfilePath
     fi
