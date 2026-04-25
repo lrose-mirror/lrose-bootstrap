@@ -427,18 +427,19 @@ def installPackagesFedora():
     # install main packages
     # break this up into pieces so it does not crash inside docker
 
-    shellCmd("yum install -y " +
+    shellCmd("dnf install -y " +
              "tcsh wget git " +
              "emacs rsync perl python " +
              "m4 make cmake libtool autoconf automake " +
+             "python-devel " +
              "gcc gcc-c++ gcc-gfortran glibc-devel " +
              "libX11-devel libXext-devel " +
              "libpng-devel libtiff-devel zlib-devel libzip-devel " +
              "eigen3-devel armadillo-devel ")
-    shellCmd("yum install -y " +
+    shellCmd("dnf install -y " +
              "expat-devel libcurl-devel openmpi-devel " +
              "flex-devel fftw3-devel " +
-             "bzip2-devel qt5-qtbase-devel qt5-qtdeclarative-devel " +
+             "bzip2-devel qt6-qtbase-devel qt6-qtdeclarative-devel " +
              "hdf5-devel netcdf-devel " +
              "xorg-x11-xauth " +
              "x11perf xclock xclipboard " +
@@ -450,7 +451,7 @@ def installPackagesFedora():
     # install required 32-bit packages for CIDD
     
     if (options.cidd32):
-        shellCmd("yum install -y " +
+        shellCmd("dnf install -y " +
                  "xrdb Xvfb gnuplot " +
                  "glibc-devel.i686 libX11-devel.i686 libXext-devel.i686 " +
                  "libtiff-devel.i686 libpng-devel.i686 libcurl-devel.i686 " +
@@ -464,7 +465,7 @@ def installPackagesFedora():
 
     # create link for qtmake
 
-    shellCmd("cd /usr/bin; ln -f -s qmake-qt5 qmake")
+    shellCmd("cd /usr/bin; ln -f -s qmake6 qmake")
 
 ########################################################################
 # install packages for ORACLE 8
