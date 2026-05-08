@@ -17,7 +17,7 @@ function usage() {
     echo "  -t ? :  set os_type"
     echo "          e.g. centos, fedora, almalinux"
     echo "  -v ? :  set os_version"
-    echo "          e.g. 7 for centos 7, 29 for fedora 29"
+    echo "          e.g. 9 for almalinux 9, 45 for fedora 45"
     echo
 }
 
@@ -82,14 +82,12 @@ echo "####################################################" > $DockerfilePath
 echo "FROM ${os_type}:${os_version}" >> $DockerfilePath
 echo "#" >> $DockerfilePath
 
-# update and add install python and git
+# update and add install git and python
 
 if [ "$os_type" = fedora ]
 then
-    if [ "$os_version" = 42 ] ; then
-        echo "RUN yum -y update; yum install -y git python" >> $DockerfilePath
-    elif [ "$os_version" = 41 ] ; then
-        echo "RUN yum -y update; yum install -y git python" >> $DockerfilePath
+    if [ "$os_version" -ge 41 ] ; then
+        echo "RUN dnf -y update; dnf install -y git python" >> $DockerfilePath
     else
         echo "RUN dnf -y update; dnf install -y git python python2 python3" >> $DockerfilePath
     fi
@@ -97,13 +95,11 @@ elif [ "$os_type" = almalinux ] || [ "$os_type" = rockylinux ]
 then
     if [ "$os_version" = 8 ] ; then
         echo "RUN dnf -y update; dnf install -y epel-release; dnf install -y 'dnf-command(config-manager)'; dnf config-manager --set-enabled powertools; dnf install -y git python2 python3; alternatives --set python /usr/bin/python3" >> $DockerfilePath
-    elif [ "$os_version" = 9 ] ; then
-        echo "RUN dnf -y update; dnf install -y git python3" >> $DockerfilePath
-    elif [ "$os_version" = 10 ] ; then
-        echo "RUN dnf -y update; dnf install -y git python3" >> $DockerfilePath
+    elif [ "$os_version" -ge 9 ] ; then
+        echo "RUN dnf -y update; dnf install -y git python" >> $DockerfilePath
     fi
 else
-    # various versions of centos or almalinux
+    # various old versions of centos or almalinux
     if [ "$os_version" = 6 ] ; then
         echo "RUN yum -y update; yum install -y git python" >> $DockerfilePath
     elif [ "$os_version" = 7 ] ; then
@@ -115,19 +111,19 @@ else
     fi
 fi
 
-# get lrose-bootstrap
+# get lrose-bootstrap and install packages
 
-echo "RUN cd; mkdir -p git; cd git; /bin/rm -rf lrose-bootstrap" >> $DockerfilePath
-echo "RUN git clone https://github.com/ncar/lrose-bootstrap" >> $DockerfilePath
-
-# add install packages by calling python script
-
-echo "RUN ~/git/lrose-bootstrap/scripts/run_install_linux_packages" >> $DockerfilePath
+echo "RUN mkdir -p /root/git && \ " >> $DockerfilePath
+echo "  cd /root/git && \ " >> $DockerfilePath
+echo "  rm -rf lrose-bootstrap && \ " >> $DockerfilePath
+echo "  git clone https://github.com/ncar/lrose-bootstrap && \ " >> $DockerfilePath
+echo "  cd lrose-bootstrap/scripts && \ " >> $DockerfilePath
+echo "  ./run_install_linux_packages " >> $DockerfilePath
 
 # using the Dockerfile, create the custom image
 
 cd /tmp/docker
 
-docker build \
+docker build --no-cache \
     --tag custom/${os_type}:${os_version} \
     --file ${DockerfilePath} .
