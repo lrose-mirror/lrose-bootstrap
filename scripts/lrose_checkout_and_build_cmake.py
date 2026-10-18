@@ -101,6 +101,9 @@ def main():
     parser.add_option('--buildDir',
                       dest='buildDir', default=buildDirDefault,
                       help='Temporary build dir, default: ' + buildDirDefault)
+    parser.add_option('--buildType',
+                      dest='buildType', default='Release',
+                      help='Build type. Valid options are Debug, Release (the default), RelWithDebInfo, MinSizeRel. These are passed on to cmake via the CMAKE_BUILD_TYPE variable.')
     parser.add_option('--logDir',
                       dest='logDir', default=logDirDefault,
                       help='Logging dir, default: ' + logDirDefault)
@@ -682,6 +685,7 @@ def buildPackage():
 
     cmd = cmakeExec
     cmd = cmd + " -DCMAKE_INSTALL_PREFIX=" + prefixDir
+    cmd = cmd + " -DCMAKE_BUILD_TYPE=" + options.buildType
     cmd = cmd + " -DLDFLAGS=" + prefixLibDir
     cmd = cmd + " .."
     shellCmd(cmd)
